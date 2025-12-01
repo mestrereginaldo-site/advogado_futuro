@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+          <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -587,6 +588,7 @@
             width: 2px;
             height: 100%;
             background: var(--gradient);
+            z-index: 1;
         }
         
         .process-step {
@@ -597,6 +599,7 @@
             opacity: 0;
             transform: translateX(-50px);
             animation: fadeInRight 0.8s ease forwards;
+            min-height: 200px;
         }
         
         .process-step:nth-child(odd) {
@@ -630,7 +633,7 @@
             border-radius: 25px;
             margin: 0 50px;
             position: relative;
-            z-index: 2; /* Adicionado para garantir que fique acima */
+            z-index: 2;
         }
         
         .step-number {
@@ -647,7 +650,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 3; /* Aumentado para ficar acima de tudo */
+            z-index: 3;
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
         }
         
         /* Pricing */
@@ -933,19 +937,21 @@
             .process-step {
                 flex-direction: row !important;
                 align-items: flex-start;
+                min-height: 150px;
             }
             
             .step-number {
                 left: 40px;
                 transform: translate(-50%, 0);
                 top: 0;
-                margin-top: 50px; /* Adicionado espaço */
+                margin-top: 50px;
             }
             
             .step-content {
                 margin-left: 120px;
                 margin-right: 0;
-                width: calc(100% - 120px); /* Garantir que não sobreponha */
+                width: calc(100% - 120px);
+                padding: 30px;
             }
             
             .contact-container {
@@ -1071,6 +1077,7 @@
                 flex-direction: column !important;
                 align-items: flex-start;
                 margin-bottom: 60px;
+                min-height: auto;
             }
             
             .step-number {
@@ -1085,6 +1092,7 @@
             .step-content {
                 margin: 0;
                 width: 100%;
+                padding: 30px;
             }
             
             .contact-form {
@@ -1195,15 +1203,15 @@
                 
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number" data-count="97">97</div>
+                        <div class="stat-number" data-count="97">0</div>
                         <div class="stat-text">% de problemas evitados</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number" data-count="24">24</div>
+                        <div class="stat-number" data-count="24">0</div>
                         <div class="stat-text">horas de resposta</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number" data-count="150">150</div>
+                        <div class="stat-number" data-count="150">0</div>
                         <div class="stat-text">empresas protegidas</div>
                     </div>
                 </div>
@@ -1312,22 +1320,22 @@
         
         <div class="stats-grid">
             <div class="stat-item">
-                <div class="counter" data-count="150">150</div>
+                <div class="counter" data-count="150">0</div>
                 <div class="stat-text">Empresas Protegidas</div>
             </div>
             
             <div class="stat-item">
-                <div class="counter" data-count="97">97</div>
+                <div class="counter" data-count="97">0</div>
                 <div class="stat-text">% Problemas Evitados</div>
             </div>
             
             <div class="stat-item">
-                <div class="counter" data-count="42">42</div>
+                <div class="counter" data-count="42">0</div>
                 <div class="stat-text">Milhões em Economia</div>
             </div>
             
             <div class="stat-item">
-                <div class="counter" data-count="24">24</div>
+                <div class="counter" data-count="24">0</div>
                 <div class="stat-text">Horas de Resposta</div>
             </div>
         </div>
@@ -1646,39 +1654,43 @@
                 }
             });
             
-            // Counter animation
-            const counters = document.querySelectorAll('.counter');
+            // Counter animation function
+            function animateCounter(counter) {
+                const target = parseInt(counter.getAttribute('data-count'));
+                const count = parseInt(counter.innerText);
+                const increment = Math.ceil(target / 100);
+                
+                if (count < target) {
+                    counter.innerText = count + increment;
+                    setTimeout(() => animateCounter(counter), 30);
+                } else {
+                    counter.innerText = target;
+                }
+            }
             
-            const animateCounters = () => {
-                counters.forEach(counter => {
-                    const target = parseInt(counter.getAttribute('data-count'));
-                    const count = parseInt(counter.innerText);
-                    const increment = Math.ceil(target / 200);
-                    
-                    if (count < target) {
-                        counter.innerText = count + increment;
-                        setTimeout(animateCounters, 10);
-                    } else {
-                        counter.innerText = target;
-                    }
-                });
-            };
+            // Initialize all counters to 0
+            document.querySelectorAll('.counter, .stat-number').forEach(counter => {
+                counter.innerText = '0';
+            });
             
             // Intersection Observer for counters
             const observerOptions = {
-                threshold: 0.5
+                threshold: 0.5,
+                rootMargin: '0px 0px -50px 0px'
             };
             
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        animateCounters();
-                        observer.unobserve(entry.target);
+                        const counter = entry.target;
+                        animateCounter(counter);
+                        observer.unobserve(counter);
                     }
                 });
             }, observerOptions);
             
-            counters.forEach(counter => {
+            // Observe all counters
+            document.querySelectorAll('.counter, .stat-number').forEach(counter => {
                 observer.observe(counter);
             });
             
